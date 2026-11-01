@@ -19,6 +19,13 @@ export function isPlaying(round: Round, player: Player) {
   return round.matches.some(match => match.teams.flat().includes(player.id))
 }
 
+function getStreak(outcomes: number[]) {
+  const last = outcomes.at(-1)
+  if (!last) return 0
+  const length = outcomes.toReversed().findIndex(outcome => outcome !== last)
+  return last * (length === -1 ? outcomes.length : length)
+}
+
 function getRoundsWithoutMatch(tournament: Tournament, player: Player) {
   return tournament.rounds
     .slice(0, player.leftRound)
@@ -41,13 +48,15 @@ export function getStandings(tournament: Tournament) {
       const results = getResults(tournament, player)
       const scored = sum(results.map(result => result.scored))
       const conceded = sum(results.map(result => result.conceded))
+      const outcomes = results.map(result => Math.sign(result.scored - result.conceded))
       return {
         player,
         points:
           scored + (getRoundsWithoutMatch(tournament, player) * tournament.pointsPerMatch) / 2,
         diff: scored - conceded,
-        wins: results.filter(result => result.scored > result.conceded).length,
-        played: results.length,
+        wins: outcomes.filter(outcome => outcome > 0).length,
+        losses: outcomes.filter(outcome => outcome < 0).length,
+        streak: getStreak(outcomes),
       }
     })
     .sort(

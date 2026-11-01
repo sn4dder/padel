@@ -6,6 +6,12 @@ import type { Tournament } from '../types'
 const props = defineProps<{ tournament: Tournament }>()
 
 const standings = computed(() => getStandings(props.tournament))
+
+const getStreakLabel = (streak: number) => {
+  if (streak > 0) return `🔥 ${streak}`
+  if (streak < 0) return `🧊 ${-streak}`
+  return '–'
+}
 </script>
 
 <template>
@@ -15,8 +21,9 @@ const standings = computed(() => getStandings(props.tournament))
         <tr>
           <th>#</th>
           <th class="standings-table__name">Navn</th>
-          <th>K</th>
           <th>V</th>
+          <th>T</th>
+          <th>Rekke</th>
           <th>+/-</th>
           <th>Poeng</th>
         </tr>
@@ -36,15 +43,16 @@ const standings = computed(() => getStandings(props.tournament))
             {{ standing.player.name }}
             <span v-if="standing.player.leftRound" class="standings-table__tag">gått hjem</span>
           </td>
-          <td>{{ standing.played }}</td>
           <td>{{ standing.wins }}</td>
+          <td>{{ standing.losses }}</td>
+          <td class="standings-table__streak">{{ getStreakLabel(standing.streak) }}</td>
           <td>{{ standing.diff > 0 ? `+${standing.diff}` : standing.diff }}</td>
           <td class="standings-table__points">{{ standing.points.toLocaleString('nb') }}</td>
         </tr>
       </tbody>
     </table>
     <p class="standings-table__hint">
-      K = kamper · V = seiere · De som hviler får
+      V = seiere · T = tap · 🔥 seiere på rad · 🧊 tap på rad · De som hviler får
       {{ (tournament.pointsPerMatch / 2).toLocaleString('nb') }} poeng per runde
     </p>
   </div>
@@ -122,6 +130,10 @@ const standings = computed(() => getStandings(props.tournament))
   &__points {
     font-size: 18px;
     font-weight: 900 !important;
+  }
+
+  &__streak {
+    white-space: nowrap;
   }
 
   &__tag {
