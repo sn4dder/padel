@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { addPlayer, removePlayer, restorePlayer } from '../store'
 import type { Tournament } from '../types'
 import BottomSheet from './BottomSheet.vue'
@@ -10,6 +10,18 @@ const open = defineModel<boolean>({ required: true })
 const props = defineProps<{ tournament: Tournament }>()
 
 const name = ref('')
+
+const activePlayers = computed(() => props.tournament.players.filter(player => !player.leftRound))
+const restSlots = computed(() => {
+  const count = activePlayers.value.length
+  return count - Math.min(props.tournament.courts, Math.floor(count / 4)) * 4
+})
+const skipCount = computed(() => activePlayers.value.filter(player => player.skipsNextRound).length)
+
+const restLabel = computed(() => {
+  if (!restSlots.value) return 'Ingen kan hvile neste runde, alle trengs på banene.'
+  return `Plass til ${restSlots.value} som hviler neste runde · ${skipCount.value} valgt`
+})
 
 const onAdd = () => {
   addPlayer(props.tournament, name.value.trim())
@@ -31,6 +43,7 @@ const onAdd = () => {
         {{ (tournament.pointsPerMatch / 2).toLocaleString('nb') }} poeng for hver runde de står
         over.
       </p>
+      <p class="players-sheet__hint">{{ restLabel }}</p>
       <div class="players-sheet__header">
         <span class="players-sheet__toggle-label">Hviler neste runde</span>
       </div>
@@ -50,7 +63,11 @@ const onAdd = () => {
             Tilbake
           </button>
           <template v-else>
-            <Toggle v-model="player.skipsNextRound" :label="`${player.name} hviler neste runde`" />
+            <Toggle
+              v-model="player.skipsNextRound"
+              :label="`${player.name} hviler neste runde`"
+              :disabled="!player.skipsNextRound && skipCount >= restSlots"
+            />
             <button
               class="button button--small button--ghost button--danger players-sheet__remove"
               @click="removePlayer(tournament, player)"

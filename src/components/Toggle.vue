@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const value = defineModel<boolean>({ default: false })
 
-defineProps<{ label: string }>()
+defineProps<{ label: string; disabled?: boolean }>()
 </script>
 
 <template>
@@ -11,6 +11,7 @@ defineProps<{ label: string }>()
     role="switch"
     :aria-checked="value"
     :aria-label="label"
+    :disabled="disabled"
     @click="value = !value"
   >
     <span class="toggle__thumb" />
@@ -30,6 +31,10 @@ defineProps<{ label: string }>()
     content: '';
     position: absolute;
     inset: -8px;
+  }
+
+  &:disabled {
+    opacity: 0.35;
   }
 
   &__thumb {
