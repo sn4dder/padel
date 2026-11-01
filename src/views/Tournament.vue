@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import CourtCard from '../components/CourtCard.vue'
 import PlayersSheet from '../components/PlayersSheet.vue'
 import ShareSheet from '../components/ShareSheet.vue'
 import StandingsTable from '../components/StandingsTable.vue'
-import { finishTournament, nextRound } from '../store'
+import { deleteTournament, finishTournament, nextRound } from '../store'
 import type { Tournament } from '../types'
 
 const Tabs = [
@@ -13,6 +14,8 @@ const Tabs = [
 ]
 
 const props = defineProps<{ tournament: Tournament }>()
+
+const router = useRouter()
 
 const isFinished = computed(() => Boolean(props.tournament.finishedAt))
 
@@ -57,6 +60,13 @@ const onNextRound = () => {
 const onFinish = () => {
   if (!confirm('Avslutte turneringen? Den flyttes til tidligere turneringer.')) return
   finishTournament(props.tournament)
+}
+
+const onDelete = async () => {
+  if (!confirm('Slette turneringen? Dette kan ikke angres.')) return
+  const { tournament } = props
+  await router.replace('/')
+  deleteTournament(tournament)
 }
 </script>
 
@@ -134,6 +144,9 @@ const onFinish = () => {
         @click="onFinish"
       >
         Avslutt turneringen
+      </button>
+      <button v-else class="button button--ghost button--danger button--block" @click="onDelete">
+        Slett turnering
       </button>
     </template>
 

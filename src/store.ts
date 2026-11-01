@@ -56,3 +56,7 @@ export function restorePlayer(player: Player) {
 export function finishTournament(tournament: Tournament) {
   tournament.finishedAt = new Date().toISOString()
 }
+
+export function deleteTournament(tournament: Tournament) {
+  tournaments.value.splice(tournaments.value.indexOf(tournament), 1)
+}
