@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { formatDiff, formatStreak } from '../format'
 import { getStandings } from '../mexicano'
 import type { Tournament } from '../types'
 
 const props = defineProps<{ tournament: Tournament }>()
 
 const standings = computed(() => getStandings(props.tournament))
-
-const getStreakLabel = (streak: number) => {
-  if (streak > 0) return `🔥 ${streak}`
-  if (streak < 0) return `🧊 ${-streak}`
-  return '–'
-}
 </script>
 
 <template>
@@ -21,9 +16,9 @@ const getStreakLabel = (streak: number) => {
         <tr>
           <th>#</th>
           <th class="standings-table__name">Navn</th>
+          <th aria-label="Rekke" />
           <th>V</th>
           <th>T</th>
-          <th>Rekke</th>
           <th>+/-</th>
           <th>Poeng</th>
         </tr>
@@ -43,24 +38,20 @@ const getStreakLabel = (streak: number) => {
             {{ standing.player.name }}
             <span v-if="standing.player.leftRound" class="standings-table__tag">gått hjem</span>
           </td>
+          <td class="standings-table__streak">{{ formatStreak(standing.streak) }}</td>
           <td>{{ standing.wins }}</td>
           <td>{{ standing.losses }}</td>
-          <td class="standings-table__streak">{{ getStreakLabel(standing.streak) }}</td>
-          <td>{{ standing.diff > 0 ? `+${standing.diff}` : standing.diff }}</td>
+          <td>{{ formatDiff(standing.diff) }}</td>
           <td class="standings-table__points">{{ standing.points.toLocaleString('nb') }}</td>
         </tr>
       </tbody>
     </table>
-    <p class="standings-table__hint">
-      V = seiere · T = tap · 🔥 seiere på rad · 🧊 tap på rad · De som hviler får
-      {{ (tournament.pointsPerMatch / 2).toLocaleString('nb') }} poeng per runde
-    </p>
   </div>
 </template>
 
 <style lang="scss">
 .standings-table {
-  padding: 8px 10px 16px;
+  padding: 8px 10px;
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-md);
@@ -148,14 +139,6 @@ const getStreakLabel = (streak: number) => {
 
   &__row--left {
     opacity: 0.4;
-  }
-
-  &__hint {
-    margin-top: 12px;
-    padding: 0 6px;
-    color: var(--color-muted);
-    font-size: 13px;
-    text-align: center;
   }
 }
 </style>

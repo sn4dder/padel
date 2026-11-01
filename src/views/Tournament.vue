@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import CourtCard from '../components/CourtCard.vue'
 import PlayersSheet from '../components/PlayersSheet.vue'
+import ShareSheet from '../components/ShareSheet.vue'
 import StandingsTable from '../components/StandingsTable.vue'
 import { finishTournament, nextRound } from '../store'
 import type { Tournament } from '../types'
@@ -18,6 +19,7 @@ const isFinished = computed(() => Boolean(props.tournament.finishedAt))
 const tab = ref(isFinished.value ? 'standings' : 'matches')
 const viewedIndex = ref(props.tournament.rounds.length - 1)
 const showPlayers = ref(false)
+const showShare = ref(false)
 
 const round = computed(() => props.tournament.rounds[viewedIndex.value])
 const isLatest = computed(() => viewedIndex.value === props.tournament.rounds.length - 1)
@@ -125,6 +127,7 @@ const onFinish = () => {
 
     <template v-else>
       <StandingsTable :tournament="tournament" />
+      <button class="button button--block" @click="showShare = true">Del tabell</button>
       <button
         v-if="!isFinished"
         class="button button--ghost button--danger button--block"
@@ -145,6 +148,7 @@ const onFinish = () => {
     </div>
 
     <PlayersSheet v-model="showPlayers" :tournament="tournament" />
+    <ShareSheet v-model="showShare" :tournament="tournament" />
   </div>
 </template>
 
