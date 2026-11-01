@@ -11,6 +11,13 @@
     <link rel="icon" href="/logo.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <title>Padel</title>
+    <script>
+      const theme = localStorage.getItem('padel-theme')
+      const isDark =
+        theme === 'dark' ||
+        (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+      document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+    </script>
   </head>
   <body>
     <div id="app"></div>

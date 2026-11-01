@@ -49,6 +49,7 @@ const values = computed(() => Array.from({ length: props.max + 1 }, (_, value) =
 
     &--selected {
       background: var(--color-primary);
+      color: var(--color-on-primary);
     }
   }
 }

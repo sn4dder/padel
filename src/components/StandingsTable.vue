@@ -107,6 +107,7 @@ const standings = computed(() => getStandings(props.tournament))
 
     &--1 {
       background: var(--color-primary);
+      color: var(--color-on-primary);
     }
 
     &--2 {

@@ -90,7 +90,7 @@ export async function createStandingsImage(tournament: Tournament) {
     context.beginPath()
     context.arc(rankX, centerY, 16, 0, Math.PI * 2)
     context.fill()
-    setFont(context, 900, 14, getColor('ink'))
+    setFont(context, 900, 14, getColor(!isLeft && !index ? 'on-primary' : 'ink'))
     context.textAlign = 'center'
     context.fillText(isLeft ? '–' : `${index + 1}`, rankX, centerY + 1)
 

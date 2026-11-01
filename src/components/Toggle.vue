@@ -23,7 +23,7 @@ defineProps<{ label: string }>()
   width: 52px;
   height: 32px;
   border-radius: var(--radius-pill);
-  background: #dde3ec;
+  background: var(--color-control);
   transition: background-color 0.25s;
 
   &::before {

@@ -140,7 +140,7 @@ const onStart = () => {
         <section class="setup__setting">
           <h2 class="setup__heading">Format</h2>
           <div class="setup__formats">
-            <span class="setup__option setup__option--active">Mexicano</span>
+            <span class="option option--active">Mexicano</span>
           </div>
           <p class="setup__hint">
             Første runde trekkes tilfeldig. Deretter settes lagene etter tabellen, så du spiller med
@@ -153,12 +153,12 @@ const onStart = () => {
         </section>
         <section class="setup__setting">
           <h2 class="setup__heading">Poeng per kamp</h2>
-          <div class="setup__options">
+          <div class="options">
             <button
               v-for="option in PointsOptions"
               :key="option"
-              class="setup__option"
-              :class="{ 'setup__option--active': pointsPerMatch === option }"
+              class="option"
+              :class="{ 'option--active': pointsPerMatch === option }"
               @click="pointsPerMatch = option"
             >
               {{ option }}
@@ -227,6 +227,7 @@ const onStart = () => {
     padding: 0 8px;
     border-radius: var(--radius-pill);
     background: var(--color-primary);
+    color: var(--color-on-primary);
     font-size: 14px;
     animation: pop-in 0.3s var(--ease-bounce);
   }
@@ -302,40 +303,11 @@ const onStart = () => {
     }
   }
 
-  &__options {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-
   &__formats {
     display: flex;
-    gap: 10px;
-  }
 
-  &__formats &__option {
-    padding: 0 28px;
-  }
-
-  &__option {
-    display: grid;
-    place-items: center;
-    height: 56px;
-    border-radius: var(--radius-pill);
-    background: var(--color-bg);
-    font-size: 20px;
-    font-weight: 800;
-    transition:
-      transform 0.2s var(--ease-bounce),
-      background-color 0.2s;
-
-    &:active {
-      transform: scale(0.92);
-    }
-
-    &--active {
-      background: var(--color-primary);
-      box-shadow: 0 6px 16px var(--color-primary-shadow);
+    .option {
+      padding: 0 28px;
     }
   }
 

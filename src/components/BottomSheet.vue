@@ -91,7 +91,7 @@ const onDragEnd = () => {
   &__backdrop {
     position: absolute;
     inset: 0;
-    background: rgb(28 35 51 / 34%);
+    background: var(--color-backdrop);
     transition: opacity 0.3s;
   }
 
@@ -138,7 +138,7 @@ const onDragEnd = () => {
     width: 44px;
     height: 5px;
     border-radius: var(--radius-pill);
-    background: #dde3ec;
+    background: var(--color-control);
   }
 
   &__header {

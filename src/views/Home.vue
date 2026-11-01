@@ -1,7 +1,18 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import BottomSheet from '../components/BottomSheet.vue'
 import { getStandings } from '../mexicano'
 import { current, history } from '../store'
+import { theme } from '../theme'
 import type { Tournament } from '../types'
+
+const ThemeOptions = [
+  { value: 'auto', label: 'Auto' },
+  { value: 'light', label: 'Lys' },
+  { value: 'dark', label: 'Mørk' },
+] as const
+
+const showSettings = ref(false)
 
 const getDate = (tournament: Tournament) =>
   new Date(tournament.createdAt).toLocaleDateString('nb', {
@@ -18,6 +29,26 @@ const getActiveCount = (tournament: Tournament) =>
 
 <template>
   <div class="home page">
+    <button
+      class="icon-button home__settings-button"
+      aria-label="Innstillinger"
+      @click="showSettings = true"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="22"
+        height="22"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.4"
+        stroke-linecap="round"
+      >
+        <path d="M4 7h9M19 7h1M4 17h3M13 17h7" />
+        <circle cx="16" cy="7" r="2.5" />
+        <circle cx="10" cy="17" r="2.5" />
+      </svg>
+    </button>
+
     <header class="home__hero">
       <img src="/logo.svg" alt="" class="home__logo" />
       <h1 class="home__title">Padel</h1>
@@ -52,12 +83,49 @@ const getActiveCount = (tournament: Tournament) =>
         <span class="home__winner">🏆 {{ getWinner(tournament) }}</span>
       </RouterLink>
     </section>
+
+    <BottomSheet v-model="showSettings" title="Innstillinger">
+      <div class="home__settings">
+        <h2 class="home__heading">Utseende</h2>
+        <div class="options">
+          <button
+            v-for="option in ThemeOptions"
+            :key="option.value"
+            class="option"
+            :class="{ 'option--active': theme === option.value }"
+            @click="theme = option.value"
+          >
+            {{ option.label }}
+          </button>
+        </div>
+        <button class="button button--primary button--block" @click="showSettings = false">
+          Ferdig
+        </button>
+      </div>
+    </BottomSheet>
   </div>
 </template>
 
 <style lang="scss">
 .home {
+  position: relative;
   gap: 20px;
+
+  &__settings-button {
+    position: absolute;
+    top: calc(20px + env(safe-area-inset-top));
+    right: 16px;
+  }
+
+  &__settings {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    .button {
+      margin-top: 14px;
+    }
+  }
 
   &__hero {
     display: flex;

@@ -88,6 +88,7 @@ const onSelect = (value: number) => {
     padding: 3px 12px;
     border-radius: var(--radius-pill);
     background: var(--color-primary);
+    color: var(--color-on-primary);
     font-size: 13px;
     font-weight: 800;
     animation: pop-in 0.35s var(--ease-bounce);
@@ -142,6 +143,7 @@ const onSelect = (value: number) => {
 
   &__team--winner &__score {
     background: var(--color-primary);
+    color: var(--color-on-primary);
   }
 
   &__versus {
