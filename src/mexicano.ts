@@ -79,8 +79,12 @@ function getResting(tournament: Tournament, ranked: Player[], count: number) {
   const mustRest = ranked.filter((_, index) => rests[index] < threshold)
   const due = ranked.filter((_, index) => rests[index] === threshold)
   const size = count - mustRest.length
-  const start = Math.floor(Math.random() * (due.length - size + 1))
-  return [...mustRest, ...due.slice(start, start + size)]
+  const start =
+    due.length % size
+      ? Math.floor(Math.random() * due.length)
+      : size * Math.floor((Math.random() * due.length) / size)
+  const group = Array.from({ length: size }, (_, index) => due[(start + index) % due.length])
+  return [...mustRest, ...group]
 }
 
 export function createRound(tournament: Tournament) {
