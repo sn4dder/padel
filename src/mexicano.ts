@@ -72,18 +72,29 @@ export function getStandings(tournament: Tournament) {
   ]
 }
 
+function getResting(tournament: Tournament, ranked: Player[], count: number) {
+  if (!count) return []
+  const rests = ranked.map(player => getRoundsWithoutMatch(tournament, player))
+  const threshold = rests.toSorted((a, b) => a - b)[count - 1]
+  const mustRest = ranked.filter((_, index) => rests[index] < threshold)
+  const due = ranked.filter((_, index) => rests[index] === threshold)
+  const size = count - mustRest.length
+  const start = Math.floor(Math.random() * (due.length - size + 1))
+  return [...mustRest, ...due.slice(start, start + size)]
+}
+
 export function createRound(tournament: Tournament) {
   const available = tournament.players.filter(player => !player.leftRound)
   const active = available.filter(player => !player.skipsNextRound)
   const skipping = available.filter(player => player.skipsNextRound)
   const courts = Math.min(tournament.courts, Math.floor(active.length / 4))
-  const resting = shuffle(active)
-    .sort((a, b) => getRoundsWithoutMatch(tournament, a) - getRoundsWithoutMatch(tournament, b))
-    .slice(0, active.length - courts * 4)
   const ranked = tournament.rounds.length
-    ? getStandings(tournament).map(standing => standing.player)
+    ? getStandings(tournament)
+        .map(standing => standing.player)
+        .filter(player => active.includes(player))
     : shuffle(active)
-  const playing = ranked.filter(player => active.includes(player) && !resting.includes(player))
+  const resting = getResting(tournament, ranked, active.length - courts * 4)
+  const playing = ranked.filter(player => !resting.includes(player))
   const matches: Match[] = Array.from({ length: courts }, (_, index) => {
     const [first, second, third, fourth] = playing.slice(index * 4, index * 4 + 4)
     return {
