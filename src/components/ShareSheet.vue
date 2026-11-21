@@ -19,7 +19,7 @@ watch(open, async isOpen => {
 })
 
 const onShare = () => {
-  const data = { files: [file.value], text: 'Se her er dagens scores 🎾' }
+  const data = { files: [file.value] }
   if (navigator.canShare?.(data)) {
     return navigator.share(data).catch(err => {
       if (err.name !== 'AbortError') throw err
