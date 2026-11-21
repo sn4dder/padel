@@ -9,6 +9,11 @@ import { createId, startTournament } from '../store'
 
 const PointsOptions = [16, 21, 24, 32]
 
+const DecidingPointOptions = [
+  { value: false, label: 'La stå' },
+  { value: true, label: 'Avgjørende poeng' },
+]
+
 const router = useRouter()
 
 const players = useStorage<{ id: string; name: string; isLate: boolean }[]>(
@@ -18,6 +23,7 @@ const players = useStorage<{ id: string; name: string; isLate: boolean }[]>(
 const name = ref('')
 const courts = useStorage('padel-setup-courts', 4)
 const pointsPerMatch = useStorage('padel-setup-points', 16)
+const hasDecidingPoint = useStorage('padel-setup-deciding-point', false)
 const showSettings = ref(false)
 const nameInput = ref<HTMLInputElement>()
 
@@ -41,6 +47,14 @@ const summary = computed(() => {
     .join(' · ')
 })
 
+const half = computed(() => pointsPerMatch.value / 2)
+
+const decidingPointHint = computed(() => {
+  const tie = `${half.value}–${half.value}`
+  if (!hasDecidingPoint.value) return `Står det ${tie}, blir kampen uavgjort.`
+  return `Står det ${tie}, spilles ett poeng til, og kampen lagres som ${half.value + 1}–${half.value}.`
+})
+
 const onAdd = () => {
   players.value.unshift({ id: createId(), name: name.value.trim(), isLate: false })
   name.value = ''
@@ -62,6 +76,7 @@ const onStart = () => {
     players: players.value,
     courts: courts.value,
     pointsPerMatch: pointsPerMatch.value,
+    hasDecidingPoint: hasDecidingPoint.value,
   })
   players.value = []
   router.replace(`/turnering/${tournament.id}`)
@@ -164,6 +179,21 @@ const onStart = () => {
               {{ option }}
             </button>
           </div>
+        </section>
+        <section v-if="!(pointsPerMatch % 2)" class="setup__setting">
+          <h2 class="setup__heading">Ved uavgjort</h2>
+          <div class="options">
+            <button
+              v-for="option in DecidingPointOptions"
+              :key="option.label"
+              class="option"
+              :class="{ 'option--active': hasDecidingPoint === option.value }"
+              @click="hasDecidingPoint = option.value"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+          <p class="setup__hint">{{ decidingPointHint }}</p>
         </section>
         <button class="button button--primary button--block" @click="showSettings = false">
           Ferdig

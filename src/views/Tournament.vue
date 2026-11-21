@@ -121,6 +121,7 @@ const onDelete = async () => {
             :court="match.court"
             :teams="match.teams.map(team => team.map(getName))"
             :pointsPerMatch="tournament.pointsPerMatch"
+            :hasDecidingPoint="tournament.hasDecidingPoint"
             :disabled="isFinished"
           />
           <div v-if="round.resting.length" class="tournament__resting">

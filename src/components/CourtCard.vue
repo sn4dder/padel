@@ -2,10 +2,11 @@
 import { ref } from 'vue'
 import ScoreSheet from './ScoreSheet.vue'
 
-const props = defineProps<{
+defineProps<{
   court: number
   teams: string[][]
   pointsPerMatch: number
+  hasDecidingPoint?: boolean
   disabled?: boolean
 }>()
 
@@ -21,9 +22,8 @@ const onPick = (team: number) => {
   showScoreSheet.value = true
 }
 
-const onSelect = (value: number) => {
-  const rest = props.pointsPerMatch - value
-  score.value = pickedTeam.value ? [rest, value] : [value, rest]
+const onSelect = (value: [number, number]) => {
+  score.value = value
   showScoreSheet.value = false
 }
 </script>
@@ -52,9 +52,11 @@ const onSelect = (value: number) => {
     </template>
     <ScoreSheet
       v-model="showScoreSheet"
-      :title="teams[pickedTeam].join(' og ')"
-      :max="pointsPerMatch"
-      :selected="score?.[pickedTeam]"
+      :teams="teams"
+      :team="pickedTeam"
+      :pointsPerMatch="pointsPerMatch"
+      :hasDecidingPoint="hasDecidingPoint"
+      :score="score"
       @select="onSelect"
     />
   </div>
