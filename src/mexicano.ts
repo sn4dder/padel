@@ -74,7 +74,11 @@ export function getStandings(tournament: Tournament) {
 
 function getResting(tournament: Tournament, ranked: Player[], count: number) {
   if (!count) return []
-  const rests = ranked.map(player => getRoundsWithoutMatch(tournament, player))
+  const restedLastRound = tournament.rounds.at(-1)?.resting || []
+  const rests = ranked.map(
+    player =>
+      getRoundsWithoutMatch(tournament, player) + (restedLastRound.includes(player.id) ? 0.5 : 0),
+  )
   const threshold = rests.toSorted((a, b) => a - b)[count - 1]
   const mustRest = ranked.filter((_, index) => rests[index] < threshold)
   const due = ranked.filter((_, index) => rests[index] === threshold)
