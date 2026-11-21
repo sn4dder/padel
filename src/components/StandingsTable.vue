@@ -8,6 +8,19 @@ const props = defineProps<{ tournament: Tournament }>()
 
 const standings = computed(() => getStandings(props.tournament))
 const isDiff = computed(() => props.tournament.rankBy === 'diff')
+
+const pendingIds = computed(() => {
+  const round = props.tournament.rounds.at(-1)
+  if (props.tournament.finishedAt || round.matches.every(match => match.score)) return []
+  const getIds = (isScored: boolean) => {
+    return round.matches
+      .filter(match => Boolean(match.score) === isScored)
+      .flatMap(match => match.teams.flat())
+  }
+  if (isDiff.value) return getIds(false)
+  const scoredIds = getIds(true)
+  return props.tournament.players.map(player => player.id).filter(id => !scoredIds.includes(id))
+})
 </script>
 
 <template>
@@ -28,7 +41,10 @@ const isDiff = computed(() => props.tournament.rankBy === 'diff')
         <tr
           v-for="(standing, index) in standings"
           :key="standing.player.id"
-          :class="{ 'standings-table__row--left': standing.player.leftRound }"
+          :class="{
+            'standings-table__row--left': standing.player.leftRound,
+            'standings-table__row--pending': pendingIds.includes(standing.player.id),
+          }"
         >
           <td>
             <span class="standings-table__rank" :class="`standings-table__rank--${index + 1}`">
@@ -141,7 +157,12 @@ const isDiff = computed(() => props.tournament.rankBy === 'diff')
     font-weight: 800;
   }
 
-  &__row--left {
+  tbody tr {
+    transition: opacity 0.3s;
+  }
+
+  &__row--left,
+  &__row--pending {
     opacity: 0.4;
   }
 }
