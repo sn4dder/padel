@@ -14,6 +14,7 @@ export type Tournament = {
   finishedAt?: string
   courts: number
   pointsPerMatch: number
+  rankBy?: 'points' | 'diff'
   hasDecidingPoint?: boolean
   players: Player[]
   rounds: Round[]

@@ -61,7 +61,7 @@ export function getStandings(tournament: Tournament) {
     })
     .sort(
       (a, b) =>
-        b.points - a.points ||
+        (tournament.rankBy === 'diff' ? 0 : b.points - a.points) ||
         b.diff - a.diff ||
         b.wins - a.wins ||
         a.player.name.localeCompare(b.player.name, 'nb'),

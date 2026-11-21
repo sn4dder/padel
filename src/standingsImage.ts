@@ -12,25 +12,33 @@ const Layout = {
   rowHeight: 52,
   rankX: 36,
   nameX: 68,
-  streakX: 316,
 }
 
-const Columns: {
+type Column = {
   label: string
   x: number
   weight: number
   getValue: (standing: Standing) => string
-}[] = [
-  { label: 'V', x: 346, weight: 700, getValue: standing => `${standing.wins}` },
-  { label: 'T', x: 380, weight: 700, getValue: standing => `${standing.losses}` },
-  { label: '+/-', x: 450, weight: 700, getValue: standing => formatDiff(standing.diff) },
-  {
-    label: 'Poeng',
-    x: 524,
-    weight: 900,
-    getValue: standing => standing.points.toLocaleString('nb'),
-  },
-]
+}
+
+const ColumnsByRankBy: Record<NonNullable<Tournament['rankBy']>, Column[]> = {
+  points: [
+    { label: 'V', x: 346, weight: 700, getValue: standing => `${standing.wins}` },
+    { label: 'T', x: 380, weight: 700, getValue: standing => `${standing.losses}` },
+    { label: '+/-', x: 450, weight: 700, getValue: standing => formatDiff(standing.diff) },
+    {
+      label: 'Poeng',
+      x: 524,
+      weight: 900,
+      getValue: standing => standing.points.toLocaleString('nb'),
+    },
+  ],
+  diff: [
+    { label: 'V', x: 424, weight: 700, getValue: standing => `${standing.wins}` },
+    { label: 'T', x: 458, weight: 700, getValue: standing => `${standing.losses}` },
+    { label: '+/-', x: 524, weight: 900, getValue: standing => formatDiff(standing.diff) },
+  ],
+}
 
 const RankColors = ['primary', 'team-1', 'team-2']
 
@@ -51,7 +59,9 @@ function fitText(context: CanvasRenderingContext2D, text: string, maxWidth: numb
 
 export async function createStandingsImage(tournament: Tournament) {
   const standings = getStandings(tournament)
-  const { width, scale, padding, headerHeight, rowHeight, rankX, nameX, streakX } = Layout
+  const { width, scale, padding, headerHeight, rowHeight, rankX, nameX } = Layout
+  const columns = ColumnsByRankBy[tournament.rankBy || 'points']
+  const streakX = columns[0].x - 30
   const height = headerHeight + standings.length * rowHeight + padding
 
   await document.fonts.load('900 16px "Nunito Variable"')
@@ -73,7 +83,7 @@ export async function createStandingsImage(tournament: Tournament) {
   context.textAlign = 'left'
   context.fillText('Navn', nameX, headerY)
   context.textAlign = 'right'
-  Columns.forEach(column => context.fillText(column.label, column.x, headerY))
+  columns.forEach(column => context.fillText(column.label, column.x, headerY))
 
   standings.forEach((standing, index) => {
     const top = headerHeight + index * rowHeight
@@ -98,7 +108,7 @@ export async function createStandingsImage(tournament: Tournament) {
     setFont(context, 700, 17, getColor('ink'))
     context.textAlign = 'right'
     context.fillText(streak, streakX, centerY + 1)
-    const nameEnd = streak ? streakX - context.measureText(streak).width - 12 : Columns[0].x - 28
+    const nameEnd = streak ? streakX - context.measureText(streak).width - 12 : columns[0].x - 28
 
     setFont(context, 700, 18, getColor('ink'))
     context.textAlign = 'left'
@@ -106,7 +116,7 @@ export async function createStandingsImage(tournament: Tournament) {
     context.fillText(fitText(context, name, nameEnd - nameX), nameX, centerY + 1)
 
     context.textAlign = 'right'
-    Columns.forEach(column => {
+    columns.forEach(column => {
       setFont(context, column.weight, column.weight === 900 ? 19 : 17, getColor('ink'))
       context.fillText(column.getValue(standing), column.x, centerY + 1)
     })

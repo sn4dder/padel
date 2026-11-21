@@ -17,14 +17,16 @@ export function startTournament(options: {
   players: { id: string; name: string; isLate: boolean }[]
   courts: number
   pointsPerMatch: number
+  rankBy: Tournament['rankBy']
   hasDecidingPoint: boolean
 }) {
-  const { players, courts, pointsPerMatch, hasDecidingPoint } = options
+  const { players, courts, pointsPerMatch, rankBy, hasDecidingPoint } = options
   const tournament: Tournament = {
     id: createId(),
     createdAt: new Date().toISOString(),
     courts,
     pointsPerMatch,
+    rankBy,
     hasDecidingPoint,
     players: players.map(({ id, name, isLate }) => ({ id, name, skipsNextRound: isLate })),
     rounds: [],

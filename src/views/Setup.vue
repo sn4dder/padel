@@ -6,12 +6,18 @@ import BottomSheet from '../components/BottomSheet.vue'
 import Stepper from '../components/Stepper.vue'
 import Toggle from '../components/Toggle.vue'
 import { createId, startTournament } from '../store'
+import type { Tournament } from '../types'
 
 const PointsOptions = [16, 21, 24, 32]
 
 const DecidingPointOptions = [
   { value: false, label: 'La stå' },
   { value: true, label: 'Avgjørende poeng' },
+]
+
+const RankByOptions: { value: Tournament['rankBy']; label: string }[] = [
+  { value: 'diff', label: '+/-' },
+  { value: 'points', label: 'Poeng' },
 ]
 
 const router = useRouter()
@@ -24,6 +30,7 @@ const name = ref('')
 const courts = useStorage('padel-setup-courts', 4)
 const pointsPerMatch = useStorage('padel-setup-points', 16)
 const hasDecidingPoint = useStorage('padel-setup-deciding-point', false)
+const rankBy = useStorage<Tournament['rankBy']>('padel-setup-rank-by', 'diff')
 const showSettings = ref(false)
 const nameInput = ref<HTMLInputElement>()
 
@@ -55,6 +62,11 @@ const decidingPointHint = computed(() => {
   return `Står det ${tie}, spilles ett poeng til, og kampen lagres som ${half.value + 1}–${half.value}.`
 })
 
+const rankByHint = computed(() => {
+  if (rankBy.value === 'diff') return 'Tabellen og banene settes etter +/-. Hvilerunder teller 0.'
+  return `Tabellen og banene settes etter poeng. Hvilerunder gir ${half.value.toLocaleString('nb')} poeng, halvparten av ${pointsPerMatch.value}.`
+})
+
 const onAdd = () => {
   players.value.unshift({ id: createId(), name: name.value.trim(), isLate: false })
   name.value = ''
@@ -76,6 +88,7 @@ const onStart = () => {
     players: players.value,
     courts: courts.value,
     pointsPerMatch: pointsPerMatch.value,
+    rankBy: rankBy.value,
     hasDecidingPoint: hasDecidingPoint.value,
   })
   players.value = []
@@ -194,6 +207,21 @@ const onStart = () => {
             </button>
           </div>
           <p class="setup__hint">{{ decidingPointHint }}</p>
+        </section>
+        <section class="setup__setting">
+          <h2 class="setup__heading">Rangering</h2>
+          <div class="options">
+            <button
+              v-for="option in RankByOptions"
+              :key="option.value"
+              class="option"
+              :class="{ 'option--active': rankBy === option.value }"
+              @click="rankBy = option.value"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+          <p class="setup__hint">{{ rankByHint }}</p>
         </section>
         <button class="button button--primary button--block" @click="showSettings = false">
           Ferdig

@@ -23,6 +23,14 @@ const restLabel = computed(() => {
   return `Plass til ${restSlots.value} som hviler neste runde · ${skipCount.value} valgt`
 })
 
+const restPointsLabel = computed(() => {
+  if (props.tournament.rankBy === 'diff') {
+    return 'De som hviler, og nye spillere får 0 i +/- for rundene de står over.'
+  }
+  const points = (props.tournament.pointsPerMatch / 2).toLocaleString('nb')
+  return `De som hviler, og nye spillere får ${points} poeng for hver runde de står over.`
+})
+
 const onAdd = () => {
   addPlayer(props.tournament, name.value.trim())
   name.value = ''
@@ -38,11 +46,7 @@ const onAdd = () => {
           Legg til
         </button>
       </form>
-      <p class="players-sheet__hint">
-        De som hviler, og nye spillere får
-        {{ (tournament.pointsPerMatch / 2).toLocaleString('nb') }} poeng for hver runde de står
-        over.
-      </p>
+      <p class="players-sheet__hint">{{ restPointsLabel }}</p>
       <p class="players-sheet__hint">{{ restLabel }}</p>
       <div class="players-sheet__header">
         <span class="players-sheet__toggle-label">Hviler neste runde</span>

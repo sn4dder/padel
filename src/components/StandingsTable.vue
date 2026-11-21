@@ -7,6 +7,7 @@ import type { Tournament } from '../types'
 const props = defineProps<{ tournament: Tournament }>()
 
 const standings = computed(() => getStandings(props.tournament))
+const isDiff = computed(() => props.tournament.rankBy === 'diff')
 </script>
 
 <template>
@@ -20,7 +21,7 @@ const standings = computed(() => getStandings(props.tournament))
           <th>V</th>
           <th>T</th>
           <th>+/-</th>
-          <th>Poeng</th>
+          <th v-if="!isDiff">Poeng</th>
         </tr>
       </thead>
       <tbody>
@@ -41,8 +42,10 @@ const standings = computed(() => getStandings(props.tournament))
           <td class="standings-table__streak">{{ formatStreak(standing.streak) }}</td>
           <td>{{ standing.wins }}</td>
           <td>{{ standing.losses }}</td>
-          <td>{{ formatDiff(standing.diff) }}</td>
-          <td class="standings-table__points">{{ standing.points.toLocaleString('nb') }}</td>
+          <td :class="{ 'standings-table__primary': isDiff }">{{ formatDiff(standing.diff) }}</td>
+          <td v-if="!isDiff" class="standings-table__primary">
+            {{ standing.points.toLocaleString('nb') }}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -119,7 +122,7 @@ const standings = computed(() => getStandings(props.tournament))
     }
   }
 
-  &__points {
+  &__primary {
     font-size: 18px;
     font-weight: 900 !important;
   }
