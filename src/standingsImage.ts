@@ -23,7 +23,8 @@ type Column = {
 
 const ColumnsByRankBy: Record<NonNullable<Tournament['rankBy']>, Column[]> = {
   points: [
-    { label: 'V', x: 346, weight: 700, getValue: standing => `${standing.wins}` },
+    { label: 'V', x: 312, weight: 700, getValue: standing => `${standing.wins}` },
+    { label: 'U', x: 346, weight: 700, getValue: standing => `${standing.draws}` },
     { label: 'T', x: 380, weight: 700, getValue: standing => `${standing.losses}` },
     { label: '+/-', x: 450, weight: 700, getValue: standing => formatDiff(standing.diff) },
     {
@@ -34,7 +35,8 @@ const ColumnsByRankBy: Record<NonNullable<Tournament['rankBy']>, Column[]> = {
     },
   ],
   diff: [
-    { label: 'V', x: 424, weight: 700, getValue: standing => `${standing.wins}` },
+    { label: 'V', x: 390, weight: 700, getValue: standing => `${standing.wins}` },
+    { label: 'U', x: 424, weight: 700, getValue: standing => `${standing.draws}` },
     { label: 'T', x: 458, weight: 700, getValue: standing => `${standing.losses}` },
     { label: '+/-', x: 524, weight: 900, getValue: standing => formatDiff(standing.diff) },
   ],

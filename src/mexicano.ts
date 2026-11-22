@@ -55,6 +55,7 @@ export function getStandings(tournament: Tournament) {
           scored + (getRoundsWithoutMatch(tournament, player) * tournament.pointsPerMatch) / 2,
         diff: scored - conceded,
         wins: outcomes.filter(outcome => outcome > 0).length,
+        draws: outcomes.filter(outcome => !outcome).length,
         losses: outcomes.filter(outcome => outcome < 0).length,
         streak: getStreak(outcomes),
       }

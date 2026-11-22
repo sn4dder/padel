@@ -32,6 +32,7 @@ const pendingIds = computed(() => {
           <th class="standings-table__name">Navn</th>
           <th aria-label="Rekke" />
           <th>V</th>
+          <th>U</th>
           <th>T</th>
           <th>+/-</th>
           <th v-if="!isDiff">Poeng</th>
@@ -57,6 +58,7 @@ const pendingIds = computed(() => {
           </td>
           <td class="standings-table__streak">{{ formatStreak(standing.streak) }}</td>
           <td>{{ standing.wins }}</td>
+          <td>{{ standing.draws }}</td>
           <td>{{ standing.losses }}</td>
           <td :class="{ 'standings-table__primary': isDiff }">{{ formatDiff(standing.diff) }}</td>
           <td v-if="!isDiff" class="standings-table__primary">
